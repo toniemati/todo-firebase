@@ -13,9 +13,15 @@ function App() {
     //* this code here... codes when app loads
     db.collection('todos').orderBy('timestamp', 'desc').onSnapshot((snapshot) => {
 
-      console.log(snapshot.docs[0].data());
+      console.log(snapshot.docs[0]);
 
-      setTodos(snapshot.docs.map((doc) => doc.data('todo').todo));
+      setTodos(snapshot.docs.map((doc) => ({
+        id: doc.id,
+        text: doc.data().text,
+        timestamp: doc.data().timestamp
+      })));
+
+      console.log(todos);
     });
   }, []);
 
@@ -24,7 +30,7 @@ function App() {
     if (!input) return;
 
     db.collection('todos').add({
-      todo: input,
+      text: input,
       timestamp: firebase.firestore.FieldValue.serverTimestamp()
     });
     // setTodos([...todos, input]);
@@ -45,7 +51,7 @@ function App() {
 
       <List>
         {todos.map((todo) => (
-          <Todo key={todo} todo={todo} />
+          <Todo key={todo.id} todo={todo} />
         ))}
       </List>
     </div>
